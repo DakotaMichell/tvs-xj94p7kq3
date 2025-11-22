@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concourse TVs Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050816;
+      color: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 0.25rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 1.4rem 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      opacity: 0.9;
+    }
+
+    .btn-on {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #ecfdf5;
+    }
+
+    .btn-off {
+      background: linear-gradient(135deg, #b91c1c, #ef4444);
+      color: #fef2f2;
+    }
+
+    #status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      min-height: 1.2em;
+    }
+
+    .small {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <h1>Concourse TVs</h1>
+  <p>Tap a button to send a command.</p>
+
+  <div class="btn-row">
+    <button class="btn-on" onclick="sendCommand('ON')">TURN TVs ON</button>
+    <button class="btn-off" onclick="sendCommand('OFF')">TURN TVs OFF</button>
+  </div>
+
+  <div id="status"></div>
+
+  <!-- Hidden iframe used to “click” the link without leaving this page -->
+  <iframe id="commandFrame" style="display:none;"></iframe>
+
+  <div class="small">
+    Hello, Please make sure you turn me off at the end of the day! If you have issues, call Dakota :).
+  </div>
+
+  <script>
+    const COMMAND_URLS = {
+      ON:  "https://uploads.engagephd.com/Interrupts/ChangeMultiple?accessCode=4135-fjd&groupIds=1841&pages=-100",
+      OFF: "https://uploads.engagephd.com/Interrupts/ChangeMultiple?accessCode=4135-fjd&groupIds=1841&pages=-101"
+    };
+
+    function sendCommand(type) {
+      const url = COMMAND_URLS[type];
+      const status = document.getElementById("status");
+      const frame = document.getElementById("commandFrame");
+
+      if (!url) {
+        status.textContent = "Command URL not configured.";
+        return;
+      }
+
+      status.textContent = `Sending ${type} command...`;
+
+      // This mimics clicking the original link without reloading the page
+      frame.src = url;
+
+      // Give quick feedback so staff knows they tapped it
+      setTimeout(() => {
+        status.textContent = `${type} command sent (CHECK THE TVS!!!).`;
+      }, 600);
+    }
+  </script>
+</body>
+</html>
