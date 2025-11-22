@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Concourse TVs Control</title>
+  <title>Concourse TVs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
@@ -10,18 +10,18 @@
       color-scheme: dark;
     }
 
-   body {
-  margin: 0;
-  min-height: 100vh;
-  background: #050816;
-  color: #f9fafb;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  text-align: center;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050816;
+      color: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
 
     h1 {
       margin-bottom: 0.25rem;
@@ -36,7 +36,7 @@
       opacity: 0.8;
     }
 
-    .btn-row {
+    .button-container {
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -62,21 +62,20 @@
       opacity: 0.9;
     }
 
-    .btn-on {
+    .on-button {
       background: linear-gradient(135deg, #16a34a, #22c55e);
       color: #ecfdf5;
     }
 
-    .btn-off {
+    .off-button {
       background: linear-gradient(135deg, #b91c1c, #ef4444);
       color: #fef2f2;
     }
 
-    #status {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      opacity: 0.85;
-      min-height: 1.2em;
+    /* NEW: "DO NOT PUSH" button style */
+    .danger-button {
+      background: linear-gradient(135deg, #7c2d12, #f97316);
+      color: #fff7ed;
     }
 
     .small {
@@ -84,51 +83,75 @@
       font-size: 0.75rem;
       opacity: 0.6;
     }
+
+    /* NEW: Kristina overlay */
+    #kristina-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;              /* hidden by default */
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #kristina-overlay img {
+      max-width: 100vw;
+      max-height: 100vh;
+      object-fit: contain;        /* scale to fit the page */
+    }
   </style>
 </head>
 <body>
   <h1>Concourse TVs</h1>
   <p>Tap a button to send a command.</p>
 
-  <div class="btn-row">
-    <button class="btn-on" onclick="sendCommand('ON')">TURN TVs ON</button>
-    <button class="btn-off" onclick="sendCommand('OFF')">TURN TVs OFF</button>
+  <div class="button-container">
+    <button class="on-button" onclick="turnOn()">TURN TVs ON</button>
+    <button class="off-button" onclick="turnOff()">TURN TVs OFF</button>
+
+    <!-- NEW: DO NOT PUSH button -->
+    <button class="danger-button" onclick="doNotPush()">DO NOT PUSH</button>
   </div>
 
-  <div id="status"></div>
+  <div class="small">
+    If nothing happens, make sure you're on the right network.
+  </div>
 
-  <!-- Hidden iframe used to “click” the link without leaving this page -->
+  <!-- Hidden iframe used to “click” the links without leaving the page -->
   <iframe id="commandFrame" style="display:none;"></iframe>
 
-  <div class="small">
-    Hello, Please make sure you turn me off at the end of the day! If you have issues, call Dakota :).
+  <!-- NEW: Kristina foreground overlay -->
+  <div id="kristina-overlay">
+    <img src="kristina.png" alt="Kristina" />
   </div>
 
   <script>
-    const COMMAND_URLS = {
-      ON:  "https://uploads.engagephd.com/Interrupts/ChangeMultiple?accessCode=4135-fjd&groupIds=1841&pages=-100",
-      OFF: "https://uploads.engagephd.com/Interrupts/ChangeMultiple?accessCode=4135-fjd&groupIds=1841&pages=-101"
-    };
+    // REPLACE these with your actual control URLs:
+    const ON_URL  = "https://YOUR-REAL-ON-URL-HERE";
+    const OFF_URL = "https://YOUR-REAL-OFF-URL-HERE";
 
-    function sendCommand(type) {
-      const url = COMMAND_URLS[type];
-      const status = document.getElementById("status");
+    function turnOn() {
       const frame = document.getElementById("commandFrame");
+      frame.src = ON_URL;
+    }
 
-      if (!url) {
-        status.textContent = "Command URL not configured.";
-        return;
-      }
+    function turnOff() {
+      const frame = document.getElementById("commandFrame");
+      frame.src = OFF_URL;
+    }
 
-      status.textContent = `Sending ${type} command...`;
+    // NEW: DO NOT PUSH behavior
+    function doNotPush() {
+      const overlay = document.getElementById("kristina-overlay");
 
-      // This mimics clicking the original link without reloading the page
-      frame.src = url;
+      // show overlay
+      overlay.style.display = "flex";
 
-      // Give quick feedback so staff knows they tapped it
+      // hide again after 5 seconds
       setTimeout(() => {
-        status.textContent = `${type} command sent (CHECK THE TVS!!!).`;
-      }, 600);
+        overlay.style.display = "none";
+      }, 5000);
     }
   </script>
 </body>
